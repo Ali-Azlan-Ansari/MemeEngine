@@ -1,0 +1,103 @@
+<!-- <div>
+  <input type="file" (change)="addImage($event)" multiple />
+  <button (click)="addText()">Add Text</button>
+  <button (click)="clearCanvas()">Clear Canvas</button>
+</div> -->
+
+<div class="grid m-0 p-0 canv">
+  <div class="col-4 h-full">
+    <div *ngIf="showSideView == 'Board'" class="board h-full">
+      <div class="card h-full">
+        <p-scrollPanel
+          class="scroll-hook"
+          [style]="{ width: '100%', height: '100%' }"
+        >
+          <div class="m-2">
+            <div class="grid">
+              <div class="col-6">
+            
+                <div class="flex flex-column gap-2">
+                  <label for="height">Height</label>
+                  <input
+                    pInputText
+                    id="height"
+                    aria-describedby="username-help"
+                    [(ngModel)]="backgroundHeight"
+                    (input)="updateCanvas()"
+                  />
+                 
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="flex flex-column gap-2">
+                  <label for="width">Width</label>
+                  <input
+                    pInputText
+                    id="width"
+                    aria-describedby="username-help"
+                    [(ngModel)]="backgroundWidth"
+                    (input)="updateCanvas()"
+                  />
+               
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="flex gap-2">
+                  <label for="width">Color</label>
+                </div>
+                <div class="flex justify-content-center gap-2">
+                  <p-colorPicker [inline]="true" class="color-hook"  [(ngModel)]="backgroundColor"  (onChange)="updateCanvas()" />
+                </div>
+                
+                <div class="flex justify-content-center gap-2">
+                  <input
+                    pInputText
+                    id="color"
+                    [(ngModel)]="backgroundColor"
+                    aria-describedby="username-help"
+                    (input)="updateCanvas()"
+                  />          
+                </div>
+               
+              </div>
+              <div class="col-6">
+                <p-button label="Download" (click)="downloadCanvas()" [text]="true" [raised]="true" severity="success" />
+              </div>
+             
+            </div>
+           
+           
+
+            <div class="card flex justify-content-center">
+            
+          </div>
+          </div>
+        </p-scrollPanel>
+      </div>
+    </div>
+    <div *ngIf="showSideView == 'Image'" class="image">
+      i
+      <input type="file" (change)="addImage($event)" multiple />
+      <button (click)="addText()">Add Text</button>
+      <button (click)="clearCanvas()">Clear Canvas</button>
+    </div>
+    <div *ngIf="showSideView == 'Text'" class="text">
+      t
+      <input type="file" (change)="addImage($event)" multiple />
+      <button (click)="addText()">Add Text</button>
+      <button (click)="clearCanvas()">Clear Canvas</button>
+    </div>
+    <div *ngIf="" class="layer">
+      l
+      <input type="file" (change)="addImage($event)" multiple />
+      <button (click)="addText()">Add Text</button>
+      <button (click)="clearCanvas()">Clear Canvas</button>
+    </div>
+  </div>
+  <div #Pdiv class="col-8 flex justify-content-center align-item-center">
+    <div
+      #stageContainer
+      class="canvas-container stage-hook flex justify-content-center align-item-center"
+    ></div>
+  </div>
+</div>

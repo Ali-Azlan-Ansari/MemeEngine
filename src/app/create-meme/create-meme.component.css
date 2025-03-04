@@ -1,0 +1,13 @@
+.canvas-container {
+  /* width:inherit;
+  height: 500px; */
+  margin-top: 10px;
+  overflow: hidden;
+}
+.canv{
+  height: 85vh;
+  overflow: hidden;
+}
+.scroll{
+  background-color:#1e1e1e;
+}

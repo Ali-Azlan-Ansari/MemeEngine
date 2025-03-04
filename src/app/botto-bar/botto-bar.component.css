@@ -1,0 +1,16 @@
+
+.div-i{
+  display: flex;
+  flex-direction:column-reverse;
+  justify-content: center;
+  align-items: center;
+  order: 2;
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+}
+.div-i:hover{
+    background-color: #272727;
+}
+i{
+    font-size:2rem ;
+}
