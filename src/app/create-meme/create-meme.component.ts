@@ -8,6 +8,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { ButtonModule } from 'primeng/button';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { MessageService } from 'primeng/api';
+import { FileUpload, FileUploadModule } from 'primeng/fileupload';
+import { ToastModule } from 'primeng/toast';
 
 
 
@@ -15,12 +19,13 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-create-meme',
   standalone: true,
-  imports: [CommonModule,ScrollPanelModule,InputTextModule,FormsModule,ColorPickerModule,ButtonModule],
+  imports: [FileUploadModule,ToastModule,CommonModule,ScrollPanelModule,InputTextModule,FormsModule,ColorPickerModule,ButtonModule,InputNumberModule],
   templateUrl: './create-meme.component.html',
   styleUrls: ['./create-meme.component.css'],
+  providers:[MessageService]
 })
 export class CreateMemeComponent implements AfterViewInit,OnInit,OnDestroy {
-  constructor(private menuItemService:MenuItemService){}
+  constructor(private menuItemService:MenuItemService,private messageService: MessageService){}
   showSideView='Board'
   ngOnInit(): void {
     this.menuItemService.changeItem(
@@ -86,17 +91,22 @@ export class CreateMemeComponent implements AfterViewInit,OnInit,OnDestroy {
   stage!: Konva.Stage;
   layer!: Konva.Layer;
   background!: Konva.Rect;
-
   backgroundHeight!: number ; 
   backgroundWidth!: number ; 
   backgroundColor!: string; 
 
+  // for input
+  maxHeight!: number ; 
+  maxWidth!: number ; 
 
   ngAfterViewInit() {
     const rect = this.Pdiv.nativeElement.getBoundingClientRect();
     console.log('Width:', rect.width, 'Height:', rect.height);
-    this.backgroundHeight=parseInt(rect.height)
-    this.backgroundWidth=parseInt(rect.width)
+    this.maxHeight=parseInt(rect.height)-35
+    this.maxWidth=parseInt(rect.width)-65
+
+    this.backgroundHeight=parseInt(rect.height)-35
+    this.backgroundWidth=parseInt(rect.width)-65
 
     this.stage = new Konva.Stage({
       container: this.stageContainer.nativeElement,
@@ -121,6 +131,14 @@ export class CreateMemeComponent implements AfterViewInit,OnInit,OnDestroy {
     this.stage.add(this.layer);
   }
   updateCanvas() {
+
+    if (this.backgroundHeight> this.maxHeight){
+      this.backgroundHeight=this.maxHeight
+    }
+    if(this.backgroundWidth>this.maxWidth){
+      this.backgroundWidth=this.maxWidth
+    }
+
     this.stage.height(this.backgroundHeight);
     this.background.height(this.backgroundHeight);
     this.stage.width(this.backgroundWidth);
@@ -129,10 +147,48 @@ export class CreateMemeComponent implements AfterViewInit,OnInit,OnDestroy {
     this.layer.batchDraw(); // Re-draw layer to apply changes
   }
 
-  addImage(event: any) {
-    const files = event.target.files;
-    if (!files) return;
+  // addImage(event: any ,fileUploader: any) {
+  //   debugger
+  //   const files = event.files;
+  //   if (!files) return;
 
+  //   Array.from(files).forEach((file: any) => {
+  //     const reader = new FileReader();
+  //     reader.onload = (e: any) => {
+  //       const img = new Image();
+  //       img.src = e.target.result;
+  //       img.onload = () => {
+  //         const konvaImage = new Konva.Image({
+  //           image: img,
+  //           x: 50,
+  //           y: 50,
+  //           width: img.width / 2,
+  //           height: img.height / 2,
+  //           draggable: true
+  //         });
+
+  //         const transformer = new Konva.Transformer();
+  //         this.layer.add(transformer);
+  //         konvaImage.on('click', () => {
+  //           transformer.nodes([konvaImage]);
+  //         });
+
+  //         this.layer.add(konvaImage);
+  //         this.layer.draw();
+  //       };
+  //     };
+  //     reader.readAsDataURL(file);
+  //   });
+  // }
+
+  @ViewChild('fileUploader') fileUploader!: FileUpload; // Reference to file uploader
+  images: Konva.Image[] = []; // Store images array
+  transformer!: Konva.Transformer; // Transformer reference
+  addImage(event: any) {
+    debugger
+    if (!event.files || event.files.length === 0 || event.files[0].size>1000000) return;
+
+    const files = event.files;
     Array.from(files).forEach((file: any) => {
       const reader = new FileReader();
       reader.onload = (e: any) => {
@@ -147,15 +203,48 @@ export class CreateMemeComponent implements AfterViewInit,OnInit,OnDestroy {
             height: img.height / 2,
             draggable: true
           });
-
-          const transformer = new Konva.Transformer();
-          this.layer.add(transformer);
-          konvaImage.on('click', () => {
-            transformer.nodes([konvaImage]);
-          });
-
           this.layer.add(konvaImage);
-          this.layer.draw();
+        this.layer.draw();
+
+        // Store images in an array for reference
+        if (!this.images) {
+          this.images = [];
+        }
+        this.images.push(konvaImage);
+
+        // If a transformer already exists, remove it
+        if (!this.transformer) {
+          this.transformer = new Konva.Transformer();
+          this.layer.add(this.transformer);
+        }
+
+        // Image click event: Select only the clicked image
+        konvaImage.on('click', (e) => {
+          e.cancelBubble = true; // Prevents event from propagating to stage
+          this.transformer.nodes([konvaImage]); // Select this image
+        });
+
+        // Stage click event: Deselect all images
+        this.stage.on('click', () => {
+          this.transformer.nodes([]); // Clear selection when clicking on empty space
+        });
+          // const transformer = new Konva.Transformer();
+          // this.layer.add(transformer);
+          // konvaImage.on('click', () => {
+          //   debugger
+            
+          //   transformer.nodes([konvaImage]);
+         
+          // });
+       
+        
+
+          // this.layer.add(konvaImage);
+          // console.log(this.layer)
+          // this.layer.draw();
+
+          // Reset file input after processing
+          this.fileUploader.clear(); 
         };
       };
       reader.readAsDataURL(file);

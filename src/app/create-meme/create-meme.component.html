@@ -14,30 +14,31 @@
         >
           <div class="m-2">
             <div class="grid">
-              <div class="col-6">
+              <div class="col-12">
             
                 <div class="flex flex-column gap-2">
-                  <label for="height">Height</label>
-                  <input
-                    pInputText
-                    id="height"
-                    aria-describedby="username-help"
-                    [(ngModel)]="backgroundHeight"
-                    (input)="updateCanvas()"
-                  />
-                 
+                  <label for="height">Height</label>            
+                  <p-inputNumber 
+                  [(ngModel)]="backgroundHeight"
+                  (onInput)="updateCanvas()"
+                  mode="decimal" 
+                  [showButtons]="true" 
+                  inputId="buttons1" 
+                  [min]="0" 
+                  [max]="maxHeight"/>
                 </div>
               </div>
-              <div class="col-6">
+              <div class="col-12">
                 <div class="flex flex-column gap-2">
                   <label for="width">Width</label>
-                  <input
-                    pInputText
-                    id="width"
-                    aria-describedby="username-help"
-                    [(ngModel)]="backgroundWidth"
-                    (input)="updateCanvas()"
-                  />
+                  <p-inputNumber 
+                  [(ngModel)]="backgroundWidth"
+                  (onInput)="updateCanvas()"
+                  mode="decimal" 
+                  [showButtons]="true" 
+                  inputId="buttons2" 
+                  [min]="0" 
+                  [max]="maxWidth"/>
                
                 </div>
               </div>
@@ -68,19 +69,49 @@
            
            
 
-            <div class="card flex justify-content-center">
-            
-          </div>
+       
           </div>
         </p-scrollPanel>
       </div>
     </div>
-    <div *ngIf="showSideView == 'Image'" class="image">
-      i
-      <input type="file" (change)="addImage($event)" multiple />
-      <button (click)="addText()">Add Text</button>
-      <button (click)="clearCanvas()">Clear Canvas</button>
+    <div *ngIf="showSideView == 'Image'" class="board h-full">
+      <div class="card h-full">
+        <p-scrollPanel
+          class="scroll-hook"
+          [style]="{ width: '100%', height: '100%' }"
+        >
+          <div class="m-2">
+            <div class="grid">
+         <div class="card flex justify-content-center w-full m-2">
+          <p-fileUpload 
+  #fileUploader
+  mode="basic" 
+  name="demo[]" 
+  customUpload="true"
+  chooseIcon="pi pi-upload" 
+  accept="image/*" 
+  maxFileSize="1000000" 
+  (onSelect)="addImage($event)" 
+  [auto]="true" 
+  chooseLabel="Browse" />
+          <!-- <p-fileUpload 
+          #fileUploader
+          mode="basic" 
+          name="demo[]" 
+          customUpload="true"
+          chooseIcon="pi pi-upload" 
+          accept="image/*" maxFileSize="1000000" 
+          (onSelect)="addImage($event,fileUploader)" 
+          [auto]="true" 
+          chooseLabel="Browse" />-->
+          </div> 
+             
+            </div>
+          </div>
+        </p-scrollPanel>
+      </div>
     </div>
+  
     <div *ngIf="showSideView == 'Text'" class="text">
       t
       <input type="file" (change)="addImage($event)" multiple />
